@@ -35,7 +35,10 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server nyala di port ${port}`);
 });
-const client = new Client({ authStrategy: new LocalAuth() });
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Server nyala di port ${port}`);
+});
 
 client.on('qr', (qr) => {
     qrcode.generate(qr, { small: true });
