@@ -1,18 +1,34 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+require('dotenv').config();
 
 // --- PENGATURAN KONEKSI ---
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbw17huSINyUawve_lQeYtLD5lMrPhVIsa2i-TvRW2eefgqP5WQVB19SJvSmfRLzWcM/exec';
-const GEMINI_API_KEY = 'AIzaSyDsHCIxw-P707XJ4y7_5PgdnfPhKLBj6yc';
+const GAS_URL = 'AKfycbw17huSINyUawve_lQeYtLD5lMrPhVIsa2i-TvRW2eefgqP5WQVB19SJvSmfRLzWcM'; 
 
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const express = require('express');
 const app = express();
 
 app.get('/', (req, res) => {
     res.send('Bot Keuangan Bang Bot Sedang Berjalan!');
 });
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Server nyala di port ${port}`);
+});
+
+// --- PENGATURAN PUPPETEER KHUSUS TERMUX ---
+const client = new Client({
+    authStrategy: new LocalAuth(),
+    puppeteer: {
+        executablePath: '/data/data/com.termux/files/usr/bin/chromium-browser',
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+    }
+});
+
+// ... (Biarkan sisa kode di bawahnya tetap sama)
 
 // Port akan otomatis disesuaikan oleh Render
 const port = process.env.PORT || 3000;
