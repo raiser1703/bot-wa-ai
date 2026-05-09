@@ -82,7 +82,11 @@ client.on('message', async msg => {
         
         try {
             const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-            const promptIseng = `Kamu adalah asisten AI yang santai dan asyik diajak ngobrol. Balas pertanyaan ini dengan gaya bahasa gaul: "${pertanyaan}"`;
+            // Kita ambil jam dari sistem HP abang
+const waktuSekarang = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+
+// Kita bisikin ke AI-nya jam berapa sekarang
+const promptIseng = `Kamu adalah asisten AI yang santai dan asyik diajak ngobrol. Waktu saat ini adalah ${waktuSekarang}. Balas pertanyaan ini dengan gaya bahasa gaul: "${pertanyaan}"`;
             
             const result = await model.generateContent(promptIseng);
             msg.reply(result.response.text());
