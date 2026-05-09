@@ -41,9 +41,8 @@ client.on('ready', () => {
 });
 
 client.on('message', async msg => {
-    // Biar bot cuma merespons chat dari nomor abang (opsional, hapus tanda // di bawah kalau mau dipakai)
-    // if (msg.from !== '628XXXXXXXXXX@c.us') return;
-
+    
+    // --- FITUR 1: PENCATAT KEUANGAN ---
     if (msg.body.toLowerCase().startsWith('catat')) {
         const prompt = `Saya punya pesan pencatatan keuangan: "${msg.body}". 
         Tolong ekstrak menjadi format JSON dengan key: "tanggal" (DD/MM/YYYY), "kategori" (Pemasukan/Pengeluaran), "nominal" (angka tanpa titik/koma), dan "deskripsi".
@@ -55,11 +54,9 @@ client.on('message', async msg => {
             const result = await model.generateContent(prompt);
             const responseText = result.response.text().trim();
             
-            // Bersihkan markdown kalau AI masih bandel
             const cleanJson = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
             const dataJSON = JSON.parse(cleanJson);
 
-            // Kirim ke Google Apps Script
             const fetch = require('node-fetch');
             const responseGAS = await fetch(GAS_URL, {
                 method: 'POST',
@@ -77,15 +74,14 @@ client.on('message', async msg => {
             console.error('Error:', error);
             msg.reply('❌ Waduh, ada error pas memproses pesan abang.');
         }
-    }
-    } else if (msg.body.toLowerCase().startsWith('bot')) {
-        // --- FITUR CHAT ISENG ---
-        // Menghapus kata "bot" di depan biar AI cuma baca pertanyaannya
+    } 
+    
+    // --- FITUR 2: CHAT ISENG ---
+    else if (msg.body.toLowerCase().startsWith('bot')) {
         const pertanyaan = msg.body.substring(3).trim(); 
         
         try {
             const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-            // Kita kasih "kepribadian" biar balasannya asyik
             const promptIseng = `Kamu adalah asisten AI yang santai dan asyik diajak ngobrol. Balas pertanyaan ini dengan gaya bahasa gaul: "${pertanyaan}"`;
             
             const result = await model.generateContent(promptIseng);
@@ -95,6 +91,5 @@ client.on('message', async msg => {
             msg.reply('Aduh bang, pala bot lagi pusing nih (Limit API).');
         }
     }
-});
 
-client.initialize();
+});
