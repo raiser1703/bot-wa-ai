@@ -78,6 +78,23 @@ client.on('message', async msg => {
             msg.reply('❌ Waduh, ada error pas memproses pesan abang.');
         }
     }
+    } else if (msg.body.toLowerCase().startsWith('bot')) {
+        // --- FITUR CHAT ISENG ---
+        // Menghapus kata "bot" di depan biar AI cuma baca pertanyaannya
+        const pertanyaan = msg.body.substring(3).trim(); 
+        
+        try {
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+            // Kita kasih "kepribadian" biar balasannya asyik
+            const promptIseng = `Kamu adalah asisten AI yang santai dan asyik diajak ngobrol. Balas pertanyaan ini dengan gaya bahasa gaul: "${pertanyaan}"`;
+            
+            const result = await model.generateContent(promptIseng);
+            msg.reply(result.response.text());
+        } catch (error) {
+            console.error('Error Chat Iseng:', error);
+            msg.reply('Aduh bang, pala bot lagi pusing nih (Limit API).');
+        }
+    }
 });
 
 client.initialize();
