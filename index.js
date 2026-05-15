@@ -1,3 +1,4 @@
+const schedule = require('node-schedule');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -95,7 +96,39 @@ const promptIseng = `Kamu adalah asisten AI yang santai dan asyik diajak ngobrol
             msg.reply('Aduh bang, pala bot lagi pusing nih (Limit API).');
         }
     }
+// --- FITUR 5: PENGINGAT / ALARM ---
+    else if (msg.body.toLowerCase().startsWith('ingatin') || msg.body.toLowerCase().startsWith('alarm')) {
+        const waktuSekarang = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+        
+        try {
+            msg.reply('Siappp, lagi saya setel alarmnya...');
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+            
+            const promptAlarm = `Saya ingin diingatkan tentang: "${msg.body}". 
+            Waktu saat ini adalah ${waktuSekarang} WIB.
+            Tolong ambil intisari tugas dan waktu pengingatnya.
+            Balas HANYA dengan format JSON murni: {"tugas": "isi tugas", "waktu": "YYYY-MM-DDTHH:mm:ss"}
+            Pastikan waktu yang dihasilkan sesuai dengan zona waktu Asia/Jakarta.`;
 
+            const result = await model.generateContent(promptAlarm);
+            const responseText = result.response.text().trim();
+            const cleanJson = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
+            const dataAlarm = JSON.parse(cleanJson);
+
+            const waktuTarget = new Date(dataAlarm.waktu);
+
+            // Penjadwalan otomatis
+            schedule.scheduleJob(waktuTarget, function() {
+                client.sendMessage(msg.from, `🔔 *PENGINGAT ALARM!*\n\nBang, waktunya: *${dataAlarm.tugas}*`);
+            });
+
+            msg.reply(`✅ Alarm dipasang!\n📌 Tugas: ${dataAlarm.tugas}\n⏰ Jam: ${dataAlarm.waktu.replace('T', ' ')}`);
+
+        } catch (error) {
+            console.error('Error Alarm:', error);
+            msg.reply('Gagal pasang alarm bang, format waktunya mungkin ribet.');
+        }
+    }
 });
 
 client.initialize();
