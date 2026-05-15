@@ -97,7 +97,7 @@ const promptIseng = `Kamu adalah asisten AI yang santai dan asyik diajak ngobrol
         }
     }
 // --- FITUR 5: PENGINGAT / ALARM ---
-    else if (msg.body.toLowerCase().startsWith('ingatin') || msg.body.toLowerCase().startsWith('alarm')) {
+    else if (msg.body.toLowerCase().startsWith('ingetin') || msg.body.toLowerCase().startsWith('alarm')) {
         const waktuSekarang = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
         
         try {
